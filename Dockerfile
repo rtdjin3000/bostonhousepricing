@@ -1,22 +1,20 @@
-# syntax=docker/dockerfile:1.4
-FROM --platform=$BUILDPLATFORM python:3.7
+# Base Image
+FROM python:3.7
 
+# Work directory
 WORKDIR /app
 
-# set environmental variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Copy requirements and install dependencies
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
 
-# install the requirements
-COPY ./app
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install -r requirements.txt
-
+# Copy other project files
 COPY . .
 
-# initialize the database (create DB, tables, populate)
-RUN python init_db.py
+# Expose a port to Containers 
+EXPOSE 8080
 
-EXPOSE 5000/tcp
+# Command to run on server
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
 
 CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "app:app"]
