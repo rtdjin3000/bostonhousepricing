@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM --platform=$BUILDPLATFORM python:3.10-alpine
+FROM --platform=$BUILDPLATFORM python:3.7
 
 WORKDIR /app
 
@@ -8,9 +8,9 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # install the requirements
-COPY requirements.txt /app
+COPY ./app
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip3 install -r requirements.txt
+    pip install -r requirements.txt
 
 COPY . .
 
