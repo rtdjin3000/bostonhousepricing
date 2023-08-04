@@ -3,7 +3,8 @@
 FROM python:3.7
 
 # Copy the contents of the app folder to the current working directory in the container
-COPY ./app /app
+# Fixed typo: changed "COPY ./app /app" to "COPY ./app/* /app/"
+COPY ./app/* /app/
 
 # Set the working directory to /app
 WORKDIR /app
