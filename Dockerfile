@@ -1,22 +1,22 @@
+# syntax=docker/dockerfile:1.4
+FROM --platform=$BUILDPLATFORM python:3.10-alpine
 
-# Use a base image with Python 3.7
-FROM python:3.7
-
-# Copy the contents of the app folder to the current working directory in the container
-# Fixed typo: changed "COPY ./app /app" to "COPY ./app/* /app/"
-COPY ./app/* /app/
-
-# Set the working directory to /app
 WORKDIR /app
 
-# Install the Python dependencies listed in requirements.txt
-RUN pip install -r requirements.txt
+# set environmental variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-# Set a default value for the $PORT variable
-ENV PORT=8000
+# install the requirements
+COPY requirements.txt /app
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip3 install -r requirements.txt
 
-# Expose the port specified by the $PORT variable
-EXPOSE $PORT
+COPY . .
 
-# Start the application using gunicorn
-CMD gunicorn --workers=4 --bind 0.0.0.0:$PORT app:app
+# initialize the database (create DB, tables, populate)
+RUN python init_db.py
+
+EXPOSE 5000/tcp
+
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "app:app"]
