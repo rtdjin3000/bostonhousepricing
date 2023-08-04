@@ -3,13 +3,15 @@
 FROM python:3.7
 
 # Copy the contents of the app folder to the current working directory in the container
-# Fixed typo: changed "COPY ./app /app" to "COPY ./app/* /app/"
+# Change COPY ./app /app to COPY ./app/* /app/
 COPY ./app/* /app/
 
 # Set the working directory to /app
 WORKDIR /app
 
 # Install the Python dependencies listed in requirements.txt
+# Added "COPY requirements.txt /app/"" to copy requirements.txt into the container
+COPY requirements.txt /app/
 RUN pip install -r requirements.txt
 
 # Set a default value for the $PORT variable
